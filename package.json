@@ -1,0 +1,11 @@
+{
+  "name": "lipreading_data_factory",
+  "version": "0.0.1",
+  "description": "scripts for cooking lip reading dataset",
+  "author": "Denis Stepanov",
+  "email": "dondiego4697@mail.ru",
+  "license": "ISC",
+  "dependencies": {
+    "selenium-webdriver": "^4.0.0-alpha.1"
+  }
+}
