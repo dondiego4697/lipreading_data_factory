@@ -5,8 +5,16 @@ module.exports = {
     async spawn(cmd, parameters) {
         const getData = async (child) => {
             return new Promise((resolve, reject) => {
+                child.stdout.on('data', (data) => {
+                    debug(`stdout: ${data.toString()}`, 'green');
+                });
+
                 child.stderr.on('data', (data) => {
-                    debug(data.toString(), 'green');
+                    debug(`stderr: ${data.toString()}`, 'green');
+                });
+
+                child.on('error', (e) => {
+                    debug(`Error: ${e}`, 'red');
                 });
 
                 child.on('close', (code) => {

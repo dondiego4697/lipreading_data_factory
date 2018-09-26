@@ -22,7 +22,11 @@ module.exports = {
         fs.mkdirSync(p);
     },
 
-    rmDir(p) {
-        fs.rmdirSync(p);
+    readFile(p) {
+        return fs.readFileSync(p);
+    },
+
+    writeToFile(p, data) {
+        return fs.writeFileSync(p, data);
     }
 };

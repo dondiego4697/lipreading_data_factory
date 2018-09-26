@@ -117,9 +117,10 @@ def signal_handler(signal, frame):
 
 videos_names = listdir(os.path.join(os.getcwd(), 'videos'))
 for num, video_name in enumerate(videos_names):
-    print((OKGREEN + 'Start {}' + ENDC).format(video_name))
     if (video_name == '.DS_Store' or video_name == '._.DS_Store'):
         continue
+
+    print((OKGREEN + 'Start {}' + ENDC).format(video_name))
 
     frames_folder = os.path.join(os.getcwd(), 'videos', video_name, 'frames')
     mouth_frames_folder = os.path.join(os.getcwd(), 'videos', video_name, 'mouth_frames')
@@ -180,5 +181,6 @@ for num, video_name in enumerate(videos_names):
         cv2.imwrite(os.path.join(mouth_frames_folder, str(frame_number) + '.jpg'), roi)
 
     create_file(mouth_frames_data_ok_file)
+    remove_file(mouth_frames_data_busy_file)
 
     #cv2.destroyAllWindows()
