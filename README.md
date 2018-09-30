@@ -1,4 +1,4 @@
-0. export PATH="$(pwd)/browser-drivers:$PATH"
+0. **export PATH="$(pwd)/browser-drivers:$PATH"**
 1. **youtube-dl** - to download video from youtube
 **Example:**
 ```youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' https://www.youtube.com/watch?v=t-YfNpUJpqA```
@@ -12,3 +12,4 @@ with name "**video**" to the folder.
 8. **form-frames-pack.js** - form result frame pack
 
 ### Helpers
+1. **generate-html-checker.js** - generate html page with scripts inside to check correctness of forming frame pack
