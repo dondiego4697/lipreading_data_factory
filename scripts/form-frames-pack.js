@@ -15,9 +15,10 @@ const fillFramePackFolder = async (videoName, framesData) => {
 
     for (let i = 0; i < framesData.length; i++) {
         const frameData = framesData[i];
-        for (let j = 0; j < frameData.interval.length; j++) {
-            const source = `${videoFolderPath}/mouth_frames/${frameData.interval[j]}.jpg`;
-            const dist = `${framesPath}/${frameData.interval[j]}.jpg`;
+        const interval = frameData.framesInterval;
+        for (let j = 0; j < interval.length; j++) {
+            const source = `${videoFolderPath}/mouth_frames/${interval[j]}.jpg`;
+            const dist = `${framesPath}/${interval[j]}.jpg`;
             const cmd = `cp ${source} ${dist}`.split(' ');
             await spawn(cmd[0], cmd.slice(1));
         }
@@ -57,38 +58,48 @@ const formFramesPack = async () => {
         const mouthFramesNumbers = getMouthFramesNumbers(`${path}/mouth_frames`);
         let framesData = [];
 
-        for (let i = 1; i < wordsData.length - 2; i++) {
-            const startTime = getSeconds(addSecondToTime(wordsData[i].time));
-            const endTime = getSeconds(addSecondToTime(wordsData[i + 1].time));
-            const duration = endTime - startTime + 1;
+        // исключаем первое и последнее предложение!
+        for (let i = 1; i < wordsData.length - 1; i++) {
+            const startTime = getSeconds(wordsData[i].time);
 
-            const words = wordsData[i].text.split(' ');
-            const lettersCount = words.join('').length;
-            const wordsDurations = words.map((w) => {
-                const part = w.length / lettersCount;
-                return part * duration;
-            });
+            const wordsTime = JSON.parse(readFile(`${path}/audio-split/${i}.json`));
+            const wordsInfo = wordsTime.fragments;
+            let skipWordPart = false;
 
-            let currTime = startTime;
-            const frameData = wordsDurations.map((d, i) => {
-                // TODO нужен aeneas
-                const intervalBorders = [Math.floor(currTime * FRAMES_PER_S), Math.ceil((currTime + d) * FRAMES_PER_S)];
-                let interval = [];
+            const frameData = wordsInfo.map((word, k) => {
+                const wordDuration = Number(word.end) - Number(word.begin);
+                if (wordDuration === 0) {
+                    skipWordPart = true;
+                }
+
+                const begin = startTime + Number(word.begin); // in seconds
+                const end = begin + wordDuration; // in seconds
+
+                const intervalBorders = [Math.floor(begin * FRAMES_PER_S), Math.ceil(end * FRAMES_PER_S)];
+                const interval = [];
                 for (let j = intervalBorders[0]; j <= intervalBorders[1]; j++) {
                     interval.push(j);
                 }
-                currTime += d;
+
                 return {
-                    interval,
-                    word: words[i]
+                    framesInterval: interval,
+                    word: word.lines[0],
+                    dev: {
+                        id: `${i}_${k}`,
+                        framesPath: `${framePackPath}/frames`,
+                        audioPath: `${path}/audio-split/${i}.mp3`,
+                        audioIntervalInSeconds: [Number(word.begin), Number(word.end)]
+                    }
                 };
             }).filter((data) => {
-                return data.interval.some((i) => {
+                return data.framesInterval.every((i) => {
                     return checkFrameExistence(mouthFramesNumbers, i);
                 });
             });
 
-            framesData = framesData.concat(frameData);
+            if (!skipWordPart) {
+                framesData = framesData.concat(frameData);
+            }
         }
 
         await fillFramePackFolder(name, framesData);
