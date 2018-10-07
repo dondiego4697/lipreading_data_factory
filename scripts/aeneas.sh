@@ -9,7 +9,7 @@ for i in $VIDEOS_PATH/* ; do
             k=$(echo $(basename "$j") | rev | cut -c 5- | rev)
             path=$VIDEOS_PATH/$(basename "$i")/audio-split/$k
             python -m aeneas.tools.execute_task \
-                $path.mp3 \
+                $path.wav \
                 $path.txt \
                 "task_language=ru|os_task_file_format=json|is_text_type=plain" \
                 $path.json

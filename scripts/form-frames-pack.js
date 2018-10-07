@@ -1,7 +1,7 @@
 const {readDir, getAbsolutePath, readFile, writeToFile, mkDir} = require('../utils/fs');
 const {spawn} = require('../utils/spawn');
 const {debug} = require('../utils/debugger');
-const {addSecondToTime, getSeconds} = require('../utils/time');
+const {getSeconds} = require('../utils/time');
 
 const FRAME_PACK = 'frame-pack';
 

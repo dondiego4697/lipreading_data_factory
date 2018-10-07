@@ -22,12 +22,15 @@ const split = async () => {
         // Разделяем аудио
         for (let i = 0; i < wordsData.length - 1; i++) {
             const wordData = wordsData[i];
-            const offset = '.200';
+            const offset = '.400';
             const startTime = i === 0 ? '00:00:00' : `00:${wordData.time}${offset}`;
             const endTime = `00:${wordsData[i + 1].time}${offset}`;
 
-            const ffmpeg = `ffmpeg -i ${path}/audio.mp3 -acodec copy -ss ${startTime} -to ${endTime} ${audioSplitPath}/${i}.mp3`.split(' ');
-            await spawn(ffmpeg[0], ffmpeg.slice(1));
+            const audioSplitFile = `${audioSplitPath}/${i}`;
+            const mp3Devide = `ffmpeg -i ${path}/audio.mp3 -acodec copy -ss ${startTime} -to ${endTime} ${audioSplitFile}.mp3`.split(' ');
+            await spawn(mp3Devide[0], mp3Devide.slice(1));
+            const mp3ToWav = `ffmpeg -i ${audioSplitFile}.mp3 -ar 16000 ${audioSplitFile}.wav`.split(' ');
+            await spawn(mp3ToWav[0], mp3ToWav.slice(1));
 
             // записываем соответственно текст
             writeToFile(`${audioSplitPath}/${i}.txt`, wordData.text.split(' ').join('\n'));

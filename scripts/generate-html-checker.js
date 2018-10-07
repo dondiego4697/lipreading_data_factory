@@ -12,36 +12,43 @@ const makeHTML = (data) => {
             <body>
                 <script>
                     var framePackData = ${JSON.stringify(data)};
-                    var rand = Math.floor(Math.random() * (framePackData.length - 1));
-                    var data = framePackData[rand];
+                    for (var j = 0; j < framePackData.length; j++) {
+                        // var rand = Math.floor(Math.random() * (framePackData.length - 1));
+                        var data = framePackData[j];
 
-                    var word = document.createElement('h1');
-                    word.innerHTML = data.word;
-                    document.body.appendChild(word);
+                        var word = document.createElement('h1');
+                        word.innerHTML = data.word;
+                        document.body.appendChild(word);
 
-                    var interval = data.framesInterval;
-                    var promises = interval.map((i) => {
-                        return new Promise((resolve) => {
-                            var img = new Image();
-                            img.onload = () => {resolve(img)};
-                            img.src = data.dev.framesPath + '/' + i + '.jpg';
+                        var interval = data.framesInterval;
+
+                        var wordsFramesDiv = document.createElement('div');
+                        document.body.appendChild(wordsFramesDiv);
+
+                        var promises = interval.map((i) => {
+                            return new Promise((resolve) => {
+                                var img = new Image();
+                                img.containerP = wordsFramesDiv;
+                                img.onload = () => {resolve(img)};
+                                img.src = data.dev.framesPath + '/' + i + '.jpg';
+                            });
                         });
-                    });
 
-                    Promise.all(promises).then((imgs) => {
-                        imgs.forEach((img) => {
-                            var canvas = document.createElement('canvas');
-                            canvas.width = 120;
-                            canvas.height = 120;
-                            document.body.appendChild(canvas);
-                            canvas.getContext('2d').drawImage(img, 0, 0);
+                        Promise.all(promises).then((imgs) => {
+                            imgs.forEach((img) => {
+                                var canvas = document.createElement('canvas');
+                                canvas.width = 120;
+                                canvas.height = 120;
+                                img.containerP.appendChild(canvas);
+                                canvas.getContext('2d').drawImage(img, 0, 0);
+                            });
                         });
-                    });
 
-                    var audio = document.createElement('audio');
-                    audio.src = data.dev.checkerPath + '/' + data.dev.id + '.mp3';
-                    audio.controls = true;
-                    document.body.appendChild(audio);
+                        var audio = document.createElement('audio');
+                        audio.src = data.dev.checkerPath + '/' + data.dev.id + '.mp3';
+                        audio.controls = true;
+                        document.body.appendChild(audio);
+                    }
                 </script>
             </body>
         </html>
